@@ -1,0 +1,108 @@
+﻿@page
+@model e_commerce.Pages.CustomerModel
+@{
+    ViewData["Title"] = "Customer Page";
+}
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .container {
+        max-width: 90%;
+        margin: 0 auto;
+    }
+
+    .header {
+        text-align: center;
+        margin-top: 50px;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 20px; /* Added margin for better spacing */
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 12px; /* Increased padding for better readability */
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    .avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+    }
+
+    .customer-info {
+        font-size: 1.2rem;
+        color: #555;
+        margin-bottom: 0.5rem;
+    }
+</style>
+
+<div class="container">
+    <div class="header">
+        <h1 class="display-4">Welcome, Customer</h1>
+        <h4>Total Customers: @Model.Customers.Count</h4>
+    </div>
+
+    <!-- Improved table headers for better semantic HTML -->
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Address</th>
+                <th>Order Count</th>
+                <th>Rejected</th>
+                <th>Pending</th>
+                <th>Processing</th>
+                <th>Completed</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var customer in Model.Customers)
+            {
+                <tr>
+                    <td>
+                        @($"{customer.FirstName} {customer.LastName}")
+                    </td>
+                    <td>@customer.Email</td>
+                    <td>@($"{customer.Street}, {customer.City}, {customer.State} {customer.ZipCode}")</td>
+                    <td>@(customer.Orders?.Count ?? 0)</td>
+
+                    @{
+                        int pending = 0;
+                        int rejected = 0;
+                        int processing = 0;
+                        int completed = 0;
+                    }
+
+                    @foreach (var order in customer.Orders)
+                    {
+                        switch (order.OrderStatus)
+                        {
+                            case 1: rejected++; break;
+                            case 2: pending++; break;
+                            case 3: processing++; break;
+                            default: completed++; break;
+                        }
+                    }
+
+                    <td>@rejected</td>
+                    <td>@pending</td>
+                    <td>@processing</td>
+                    <td>@completed</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
