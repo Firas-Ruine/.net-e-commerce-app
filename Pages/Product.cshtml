@@ -4,27 +4,68 @@
     ViewData["Title"] = "Product Management";
 }
 
+
 <!-- Improved header design -->
 <div class="text-center">
     <h1 class="display-4">Products Number : @Model.Products.Count()</h1>
 </div>
+
+<!-- Product ID filter -->
+<form method="get" class="mt-4">
+    <div class="input-group">
+        <input type="text" class="form-control" id="productIdFilter" name="productId" placeholder="Search products by ID">
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-primary">Search</button>
+            <!-- Reset button initially hidden -->
+            <button type="button" class="btn btn-secondary" id="resetFilterButton" style="display: none;">Reset</button>
+        </div>
+    </div>
+</form>
+
 
 <!-- Product table -->
 <table class="table table-bordered mt-4">
     <thead class="thead-dark">
         <tr>
             <!-- Column headers with more descriptive names -->
+            <th scope="col">Product Id</th>
             <th scope="col">Product Name</th>
             <th scope="col">Brand Name</th>
             <th scope="col">Category</th>
             <th scope="col">Quantity</th>
+            <th scope="col">Order Count</th>
+            <th scope="col">Quantity Ordered</th>
+            <th scope="col" colspan="@Model.StoreNames.Count" style="text-align: center">Store Quantities</th>
+            
         </tr>
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+
+            @foreach (var storeName in Model.StoreNames)
+            {
+                <th scope="col">@storeName</th>
+            }
+            
+
+
+        </tr>
+        <
+
     </thead>
     <tbody>
         <!-- Loop through products and display information -->
         @foreach (var product in Model.Products)
         {
             <tr>
+                <td>
+                    @product.ProductId
+                </td>
                 <td>
                     @product.ProductName
                 </td>
@@ -35,15 +76,43 @@
                     @product.Category.CategoryName
                 </td>
                 <td>
-                    @if (product.Stocks.FirstOrDefault()?.Quantity > 0)
+                    @if (product.Stocks.Any())
                     {
-                        @product.Stocks.FirstOrDefault()?.Quantity
+                        <span>@product.Stocks.Sum(s => s.Quantity)</span>
                     }
                     else
                     {
                         <span>Non dispo</span>
                     }
                 </td>
+
+                <td>
+                    @product.OrderItems.Count(oi => oi.ProductId == product.ProductId)
+                </td>
+
+                <td>
+                    @product.OrderItems.Sum(oi => oi.Quantity)
+                </td>
+                    @foreach (var stock in product.Stocks)
+                    {
+                    <td>
+                        @if (stock != null && stock.Quantity > 0)
+                        {
+                            <span>@stock.Quantity</span>
+                        }
+                        else
+                        {
+                            <span>Non dispo</span>
+                        }
+                    </td>
+                    }
+            </tr>
+        }
+        <!-- If no products are found, display a message -->
+        @if (Model.Products.Count() == 0)
+        {
+            <tr>
+                <td colspan="@(7 + Model.StoreNames.Count)" class="text-center">No products found.</td>
             </tr>
         }
     </tbody>
