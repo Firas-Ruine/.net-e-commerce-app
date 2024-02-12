@@ -1,0 +1,56 @@
+﻿@page
+@model e_commerce.Pages.StaffModel
+@{
+    ViewData["Title"] = "Gestion des Staff";
+}
+<table class="table table-bordered mt-4">
+    <thead class="thead-dark">
+        <tr>
+            <!-- Column headers with more descriptive names -->
+            <th scope="col">First name</th>
+            <th scope="col">Last name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Phone</th>
+            <th scope="col">isManager</th>
+            <th scope="col">Team</th>
+
+        </tr>
+
+    </thead>
+    <tbody>
+        <!-- Loop through products and display information -->
+        @foreach (var staff in Model.Staffs)
+        {
+            <tr>
+                <td>@staff.FirstName</td>
+                <td>@staff.LastName</td>
+                <td>@staff.Email</td>
+                <td>@staff.Phone</td>
+                <td>
+                    @if (staff.Manager == null)
+                    {
+                        <span>TRUE</span>
+                    }else
+                    {
+                        <span>FALSE</span>
+                    }
+                </td>
+                <td>
+                    @if (staff.InverseManager.Any())
+                    {
+                        <ul>
+                            @foreach (var teamMember in staff.InverseManager)
+                            {
+                                <li>@teamMember.FirstName</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <span><b>No team member</b></span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
